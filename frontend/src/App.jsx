@@ -18,7 +18,7 @@ function App() {
   return (
     <div>
       <Navbar />
-      <div className='flex items-center justify-center mt-36'>
+      <div className='flex items-center justify-center mt-36 '>
         <Routes>
           <Route path="/" element={<Navigate to="/Acceuil" />} /> {/* Redirige vers Acceuil lors de l'accès à la racine */}
           <Route path="/Acceuil" element={<Acceuil />} />
