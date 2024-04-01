@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function Acceuil() {
   return (
-    <section className='flex flex-row justify-center items-center gap-10'>
+    <section className='flex flex-col md:flex-row justify-center items-center gap-10'>
 
 
         <div className='flex flex-col justify-center items-center gap-10 border h-96 w-96 rounded-md shadow-md transition-transform  hover:bg-blue-300  bg-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700'>

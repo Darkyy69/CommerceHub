@@ -2,13 +2,13 @@ import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom'; // Importez également Navigate
 import { Navbar } from './Components/Navbar';
 import Acceuil from './Pages/Acceuil/Acceuil';
-import HomeVente from './Pages/Achat/HomeVent';
+import HomeVente from './Pages/Vente/HomeVent';
 import Comptoire from './Pages/Vente/Components/Comptoire';
 import ListBons from './Pages/Vente/Components/ListBons';
 import GestionClients from './Pages/Vente/Components/GestionCLients';
 import PaymentsClient from './Pages/Vente/Components/PaymentsClient';
 import Vendre from './Pages/Vente/Components/Vendre';
-import HomeAchat from './Pages/Documents/HomeAchat';
+import HomeAchat from './Pages/Achat/HomeAchat';
 import Acheter from './Pages/Achat/Components/Acheter'
 import Fournisseur from './Pages/Achat/Components/Fournisseurs'
 import ReglementFR from './Pages/Achat/Components/ReglementFR'
@@ -36,7 +36,7 @@ function App() {
             <Route path='Acheter' element={<Acheter/>}/>
             <Route path='Fournisseurs' element={<Fournisseur/>}/>
             <Route path='ReglementFR' element={<BonsDeCommande/>}/>
-            <Route path='BonsDeCommande' elemen={<ReglementFR/>}/>
+            <Route path='BonsDeCommande' element={<ReglementFR/>}/>
           </Route>
         </Routes>
       </div>
