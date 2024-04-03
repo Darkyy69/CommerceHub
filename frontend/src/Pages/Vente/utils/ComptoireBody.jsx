@@ -33,7 +33,7 @@ export default function ComptoireBody() {
       }, []);
       
       
-  
+  console.log(article)
       
       
       
@@ -169,17 +169,17 @@ export default function ComptoireBody() {
           };
 
 
-
+// la fenetre de article info apparait dans le cas de clique sur F2
           const FenetreInfoArticle = InfoArticle && (
-            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 border border-red-600 w-1/3 h-72 bg-gray-300 rounded-lg shadow-lg p-6">
+            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-1/3 h-72 bg-gray-100 rounded-lg shadow-lg p-6">
               <div className="flex justify-between items-center mb-2">
-                <h1 className='text-xl font-bold'>Information Article</h1>
-                <button className="text-gray-500" onClick={() => setInfoArticle(false)}>
-                  <FaTimes className='hover:text-red-500'/>
-                </button>
+                <h1 className='absolute top-2 left-2 text-xl font-bold'>Information Article</h1>
+                <button className="absolute top-2 right-2 px-4 py-2 bg-red-500 text-white rounded-md" onClick={()=>setInfoArticle(false)}>
+            X
+          </button>
               </div>
           
-              <div className='flex flex-col justify-start items-start gap-2'>
+              <div className='flex flex-col justify-start items-start gap-2 mt-10'>
                 <div className='flex flex-row justify-start items-center gap-1'>
                   <label htmlFor="">Famille:</label>
                   <select name="Famille" id="" className='border border-gray-300 h-8 w-56 '></select>
@@ -211,6 +211,8 @@ export default function ComptoireBody() {
             </div>
           );
 
+
+          // la fenetre de calcultrice apparait dans le clique de calc 
           const fenetreCalculatrice=ShowCalculatrice&& <Calculatrice/>;
           
 
