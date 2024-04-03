@@ -3,7 +3,7 @@ import React,{useState} from 'react'
 import Sidebare from './Sidebare'
 
 export const Navbar = () => {
-  const [show,setShow]=useState(false)
+  const [show,setShow]=useState(true)
     const ToggelSideBare=()=>{
         setShow(!show)
     }

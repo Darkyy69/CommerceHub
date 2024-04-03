@@ -1,7 +1,27 @@
-import React from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import ComptoireNav from '../utils/ComptoireNav';
+import ComptoireBody from '../utils/ComptoireBody';
+import ComptoireTable from '../utils/ComptoireTable';
+import {DataProvider} from '../utils/DataProvider'; // Correction ici
 
-export default function Comptoire() {
+function MonComposant() {
   return (
-    <div>Comptoire</div>
-  )
+    <div className='fixed inset-0 flex flex-col justify-start items-center bg-red-200  z-40 fenetre-comptoire mt-3 ml-20 shadow-xl'>
+      <div className='mt-10'>
+        <DataProvider> {/* Utilisation du composant DataProvider */}
+          <ComptoireNav /> 
+          <Link to="/Vente" className="absolute top-2 right-2 text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </Link>
+          <ComptoireBody />
+          <ComptoireTable />
+        </DataProvider>
+      </div>
+    </div>
+  );
 }
+
+export default MonComposant;
