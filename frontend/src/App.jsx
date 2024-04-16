@@ -14,7 +14,9 @@ import Fournisseur from "./Pages/Achat/Components/Fournisseurs";
 import ReglementFR from "./Pages/Achat/Components/ReglementFR";
 import BonsDeCommande from "./Pages/Achat/Components/BonsDeCommande";
 import Sidebare from "./Components/Sidebare";
-
+import HomeEtatSuivits from "./Pages/EtatSuivits/Components/HomeEtatSuivits";
+import HomeDocuments from "./Pages/Documents/Components/HomeDocuments";
+import HomeMagazin from "./Pages/Magazin/Components/HomeMagazin";
 function App() {
   const [show, setShow] = useState(true);
   const ToggelSideBare = () => {
@@ -45,6 +47,12 @@ function App() {
             <Route path="ReglementFR" element={<BonsDeCommande />} />
             <Route path="BonsDeCommande" element={<ReglementFR />} />
           </Route>
+          {/* Routes d'état et suivits */}
+          <Route path="/Etat-Suivit" element={<HomeEtatSuivits />}></Route>
+          {/* Routes de Documents */}
+          <Route path="/Documents" element={<HomeDocuments />}></Route>
+          {/* Routes de Magazin */}
+          <Route path="/Magazin" element={<HomeMagazin />}></Route>
         </Routes>
       </div>
     </div>

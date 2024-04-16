@@ -9,7 +9,7 @@ function HomeAchat() {
     <div className="flex flex-wrap justify-center items-center gap-4">
       <Link
         to="/Achat/Acheter"
-        className="flex justify-center border h-56 w-56 rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-blue-300 bg-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
+        className="flex justify-center border h-56 w-56 rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-blue-300 bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
       >
         <div className="flex flex-col justify-center items-center gap-9">
           <h1 className="text-2xl font-bold">Acheter</h1>
@@ -19,7 +19,7 @@ function HomeAchat() {
 
       <Link
         to="/Achat/Fournisseurs"
-        className="flex justify-center border h-56 w-56 rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-blue-300  bg-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
+        className="flex justify-center border h-56 w-56 rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-blue-300  bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
       >
         <div className="flex flex-col justify-center items-center gap-9">
           <h1 className="text-2xl font-bold">Fournisseurs</h1>
@@ -29,7 +29,7 @@ function HomeAchat() {
 
       <Link
         to="/Achat/ReglementFR"
-        className="flex justify-center border h-56 w-56 rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-blue-300  bg-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
+        className="flex justify-center border h-56 w-56 rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-blue-300  bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
       >
         <div className="flex flex-col justify-center items-center gap-9">
           <h1 className="text-2xl font-bold">Reglement FR</h1>
@@ -39,7 +39,7 @@ function HomeAchat() {
 
       <Link
         to="/Achat/BonsDeCommande"
-        className="flex justify-center border h-56 w-56  rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-blue-300  bg-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
+        className="flex justify-center border h-56 w-56  rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-blue-300  bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
       >
         <div className="flex flex-col justify-center items-center gap-9">
           <h1 className="text-2xl font-bold text-center">Bons de Commande</h1>

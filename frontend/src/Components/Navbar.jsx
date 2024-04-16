@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { DarkMode } from "./DarkMode";
 import Sidebare from "./Sidebare";
 
 export const Navbar = () => {
@@ -728,6 +728,9 @@ export const Navbar = () => {
             </a>
           </div>
           <div className="flex items-center">
+            <div className="">
+              <DarkMode />
+            </div>
             <div className="flex items-center ms-3">
               <div>
                 <button
