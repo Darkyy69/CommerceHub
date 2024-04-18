@@ -15,7 +15,7 @@ export default function ComptoireBody() {
     setAjouter(false);
   };
   const [nvInputs, setNvInput] = useState({});
-  const [article, setArticl] = useState([]);
+  const [article, setArticle] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [fontSize, setFontSize] = useState(80);
   const resultRef = useRef(null);
@@ -27,7 +27,7 @@ export default function ComptoireBody() {
     axios
       .get("http://127.0.0.1:8000/api/comptoire/entite-marchandise/article/")
       .then((res) => {
-        setArticl(res.data);
+        setArticle(res.data);
       })
       .catch((err) => {
         console.error("Error fetching data:", err);
@@ -73,7 +73,7 @@ export default function ComptoireBody() {
         setInfo((prev) => [
           ...prev,
           {
-            article: selectedItem.codif,
+            article: selectedItem.disignation,
             qte: input.qte,
             prix: selectedItem.P_vente,
           },
@@ -104,7 +104,9 @@ export default function ComptoireBody() {
   //la fonction pour selecionner un artilce sont id et famille automatiquemet s'affiche
   const HandelArticl = (e) => {
     e.preventDefault();
-    const selectedItem = article.find((item) => item.codif === e.target.value);
+    const selectedItem = article.find(
+      (item) => item.disignation === e.target.value
+    );
     if (selectedItem) {
       setSelectedArticle(selectedItem); // Mettre à jour l'article sélectionné
 
@@ -117,7 +119,7 @@ export default function ComptoireBody() {
       setInfo((prev) => [
         ...prev,
         {
-          article: selectedItem.codif,
+          article: selectedItem.disignation,
           qte: input.qte,
           prix: selectedItem.P_vente,
         },
@@ -134,7 +136,7 @@ export default function ComptoireBody() {
   const HandelAjouterElement = (e) => {
     e.preventDefault();
     const nouvelArticle = {
-      codif: nvInputs.article,
+      disignation: nvInputs.article,
       barrcode: input.cb,
       qte: input.qte,
       P_vente: parseFloat(nvInputs.prix),
@@ -145,7 +147,7 @@ export default function ComptoireBody() {
     };
 
     // Mise à jour de l'état 'article' en ajoutant le nouvel article à la liste existante
-    setArticl((prevArticles) => [...prevArticles, nouvelArticle]);
+    setArticle((prevArticles) => [...prevArticles, nouvelArticle]);
     alert("article ajouter !!!!");
     // Réinitialiser les champs d'entrée
     setInput({ qte: 1, cb: 0 });
@@ -193,6 +195,7 @@ export default function ComptoireBody() {
             name="CodeBqrre"
             id=""
             className="border border-gray-300 h-8 ml-1 "
+            autoFocus="true"
           ></input>
         </div>
         <div className="flex flex-row justify-center items-center gap-2">
@@ -224,17 +227,17 @@ export default function ComptoireBody() {
   const fenetreCalculatrice = ShowCalculatrice && <Calculatrice />;
 
   return (
-    <div className="flex flex-row justify-between items-center w-full h-56  m-3">
+    <div className="flex flex-row justify-between items-center w-full h-fit m-3">
       <div className="flex flex-col h-full items-start justify-center gap-5  bg-blue-500 p-3 ml-3">
         <div className="flex flex-row gap-2 justify-center items-center">
           <div className="flex flex-row justify-center items-center gap-1 ml-6">
             <p className="text-lg font-bold">Code:</p>
             <input
-              className="w-96 h-12 text-center text-xl font-bold"
+              className="w-60 h-12 text-center text-xl font-bold"
               type="text"
               ref={cbRef}
               name="cb"
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               value={input.cb}
               defaultValue={0}
               onChange={HandelInput}
@@ -247,7 +250,7 @@ export default function ComptoireBody() {
               ref={qteRef}
               name="qte"
               onChange={HandelInput}
-              onKeyPress={handleKeyPressQte}
+              onKeyDown={handleKeyPressQte}
               value={input.qte}
               defaultValue={1}
             />
@@ -283,7 +286,7 @@ export default function ComptoireBody() {
           </p>
           <select className="w-56 h-8" onChange={HandelArticl}>
             {article.map((item, index) => (
-              <option key={index}>{item.codif}</option>
+              <option key={index}>{item.disignation}</option>
             ))}
           </select>
           <p style={{ marginTop: "6px" }} className="text-lg font-bold">

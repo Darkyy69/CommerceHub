@@ -129,7 +129,7 @@ export default function ComptoireNav() {
   };
 
   return (
-    <div>
+    <div className="h-fit">
       <div className="flex flex-row justify-center w-full gap-5 px-3">
         <div className="flex flex-col justify-center items-center bg-gray-400 p-3 w-80 h-24">
           <h3 style={{ color: "red" }} className="font-bold text-xl">
