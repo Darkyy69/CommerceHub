@@ -24,10 +24,10 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="">
       <Navbar />
       <Sidebare />
-      <div className="flex items-center justify-center mt-20">
+      <div className="px-4 md:px-8 lg:px-12 flex items-center justify-center mt-20">
         <Routes>
           <Route path="/" element={<Navigate to="/Acceuil" />} />{" "}
           {/* Redirige vers Acceuil lors de l'accès à la racine */}
