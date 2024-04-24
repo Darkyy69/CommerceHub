@@ -14,26 +14,17 @@ function MonComposant() {
         </h1>
   );
 
-
   useEffect(() => {
-    const handleKeyDown = (event) => {
-      // Check if the pressed key is F5 (keyCode 116) or (code F5)
-      if (event.keyCode === 116 || event.code === "F5") {
-        event.preventDefault();
-      }
-    };
+    // Set window to fullscreen when component mounts
+    // window.document.documentElement.requestFullscreen();
 
-    // Add event listener when the component mounts
-    window.addEventListener("keydown", handleKeyDown);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []); // Empty dependency array ensures that this effect runs only once
-
-
-
+    // return () => {
+    //   // Remove fullscreen when component unmounts
+    //   if (window.document.exitFullscreen) {
+    //     window.document.exitFullscreen();
+    //   }
+    // };
+  }, [])
 
   return (
     <section className="fixed inset-0 flex flex-col justify-start items-center bg-gray-100 z-50 shadow-xl">

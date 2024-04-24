@@ -32,6 +32,8 @@ export default function ComptoireBody() {
     setInfoArticle,
     data,
     setData,
+    lastItemSelected,
+    setLastItemSelected,
   } = useData();
 
   useEffect(() => {
@@ -125,8 +127,9 @@ export default function ComptoireBody() {
               total: selectedItem.P_vente * input.qte,
             },
           ]);
-        }
+        setLastItemSelected(lastItemSelected + 1);
 
+        }
         // Réinitialiser les champs d'entrée
         setInput({ art: "", qte: 1, id: 0, cb: 0, prix: 0 }); //initialisation
         // attendre 0.2s pour que le champ code bare soit selectionner

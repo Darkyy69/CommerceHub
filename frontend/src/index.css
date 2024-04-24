@@ -22,3 +22,7 @@
   -ms-user-select: none; /* IE10+/Edge */
   user-select: none; /* Standard */
 }
+
+.focused-row {
+  background-color: red; /* Change this to your preferred color */
+}

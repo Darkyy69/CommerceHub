@@ -13,6 +13,7 @@ export const DataProvider = ({ children }) => {
   const [result, setResult] = useState(""); // cela cest la resultat de l'equation
   const [ShowCalculatrice, setShowCalculatrice] = useState(false); // cela cest pour apparait la calculatrice ou non
   const [data, setData] = useState([]);
+  const [lastItemSelected, setLastItemSelected] = useState(0);
   // Exemple de données
   // const data = [
   //   { article: "Ordinateur portable", price: 1200, quantity: 2, total: 2400 },
@@ -43,6 +44,8 @@ export const DataProvider = ({ children }) => {
         ShowCalculatrice,
         data,
         setData,
+        lastItemSelected,
+        setLastItemSelected,
       }}
     >
       {children}

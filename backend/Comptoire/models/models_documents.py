@@ -49,10 +49,6 @@ class BonTransfer(Documents):
     def __str__(self):
         return str(self.id)  
 
-class BonReception(Documents):
-    def __str__(self):
-        return str(self.id)  
-
 class BonTranzition(Documents):
     def __str__(self):
         return str(self.id)                                 

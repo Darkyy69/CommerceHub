@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   FaCheck,
   FaPlus,
@@ -14,7 +14,7 @@ export default function ComptoireTable() {
   const [searchTermPrice, setSearchTermPrice] = useState("");
   const [searchTermQuantity, setSearchTermQuantity] = useState("");
   const [searchTermTotal, setSearchTermTotal] = useState("");
-  const { data, setData, cbRef, PrixRef, resultRef } = useData();
+  const { data, setData, cbRef, PrixRef, resultRef, lastItemSelected, setLastItemSelected } = useData();
 
   // Filtrage des données basé sur les termes de recherche
   const filteredData = data.filter(
@@ -38,6 +38,7 @@ export default function ComptoireTable() {
           total: PrixRef.current.value,
         },
       ]);
+      setLastItemSelected(lastItemSelected + 1)
       // Effacer le contenu de l'input
       PrixRef.current.value = 0;
       //selectionner le code barre
@@ -130,7 +131,8 @@ export default function ComptoireTable() {
               {filteredData.map((item, index) => (
                 <tr
                   key={index}
-                  className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}
+                  tabIndex="0"
+                  className={lastItemSelected === index+1 ? "focused-row " : ""} {... index % 2 === 0 ? "bg-black" : "bg-gray-100"}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.article}
