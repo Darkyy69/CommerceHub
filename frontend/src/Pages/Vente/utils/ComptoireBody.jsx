@@ -5,15 +5,8 @@ import { useData } from "./DataProvider";
 import Calculatrice from "./Calculatrice";
 
 export default function ComptoireBody() {
-  const qteRef = useRef(null);
   const [article, setArticle] = useState([]);
-  const [input, setInput] = useState({
-    art: "",
-    qte: 1,
-    id: 0,
-    prix: 0,
-    cb: 0,
-  });
+
   const [ajouter, setAjouter] = useState(false);
   const [showModal, setShowModal] = useState(true);
   const handleClose = () => {
@@ -24,7 +17,10 @@ export default function ComptoireBody() {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [fontSize, setFontSize] = useState(80);
   const {
+    input,
+    setInput,
     cbRef,
+    qteRef,
     resultRef,
     PrixRef,
     ShowCalculatrice,
@@ -127,8 +123,7 @@ export default function ComptoireBody() {
               total: selectedItem.P_vente * input.qte,
             },
           ]);
-        setLastItemSelected(lastItemSelected + 1);
-
+          // setLastItemSelected(lastItemSelected + 1);
         }
         // Réinitialiser les champs d'entrée
         setInput({ art: "", qte: 1, id: 0, cb: 0, prix: 0 }); //initialisation
@@ -149,7 +144,7 @@ export default function ComptoireBody() {
   const HandelInput = (e) => {
     const name = e.target.name;
     let value = e.target.value;
-
+    console.log(value);
     // Vérifier si la valeur est numérique
     if (!isNaN(value)) {
       // Limiter la longueur à 13 chiffres pour le champ 'cb'
@@ -311,13 +306,13 @@ export default function ComptoireBody() {
           <div className="flex flex-row justify-center items-center gap-1">
             <p className="text-lg font-bold mr-1 ">Qte:</p>
             <input
+              type="number"
               className="h-12 w-20 text-center font-bold"
               ref={qteRef}
               name="qte"
               onChange={HandelInput}
               onKeyDown={handleKeyPressQte}
               value={input.qte}
-              defaultValue={1}
             />
           </div>
         </div>
@@ -372,6 +367,7 @@ export default function ComptoireBody() {
             Prix:
           </p>
           <input
+            type="text"
             className="w-1/3 h-8 text-center"
             ref={PrixRef}
             name="prix"

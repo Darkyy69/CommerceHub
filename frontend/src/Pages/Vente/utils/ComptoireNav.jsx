@@ -10,6 +10,7 @@ import {
   FaCalculator,
 } from "react-icons/fa";
 import { useData } from "./DataProvider";
+import { data } from "autoprefixer";
 
 export default function ComptoireNav() {
   const [client, setClient] = useState([]);
@@ -68,8 +69,9 @@ export default function ComptoireNav() {
     useState(getCurrentDateTime());
   const [date, time] = dateEtHeureActuelles.split(" ");
   const { setShowCalculatrice } = useData();
-  const { PrixRef } = useData();
-  const { InfoArticle,setInfoArticle } = useData();
+  const { qteRef, PrixRef } = useData();
+  const { setData, data, lastItemSelected, InfoArticle, setInfoArticle } =
+    useData();
   const componentRef = useRef(null);
 
   const HandelInput = (e) => {
@@ -98,80 +100,80 @@ export default function ComptoireNav() {
       .then((res) => setClient(res.data))
       .catch((err) => console.log(err));
 
-      const handleKeyDown = (event) => {
-        switch (event.keyCode || event.code) {
-          case 187: // Add (Numpad)
-          case 106: // Multiply (Numpad)
-          case 189: // Minus (Numpad)
-          case "*":
-          case "+":
-          case "-":    
-            event.preventDefault();
-            // Add your code here for the corresponding key
-            console.log("You Pressed + or - or *");
-            break;
-          case "F1":
-          case 112 :
-            event.preventDefault();
-            // Add your code here for F1 key
-            console.log("You Pressed F1");
-            break;  
-          case "F2":
-          case 113 :
-            event.preventDefault();
-            // Add your code here for F2 key
-            console.log("You Pressed F2");
-            // fermer ou afficher la fenetre infoArticle
-            setInfoArticle(!InfoArticle);
-
-            break;
-          case "F4":
-          case 115 :
-            event.preventDefault();
-            // Add your code here for F4 key
-            console.log("You Pressed F4");
-            setListeBon(!listeBon)
-            break;
-          case "F5":
-          case 116 :
-            event.preventDefault();
-            // Add your code here for F5 key
-            console.log("You Pressed F5");
-            break;
-          case "F8":
-          case 119 :
-            event.preventDefault();
-            // Add your code here for F8 key
-            console.log("You Pressed F8");
-            PrixRef.current.select();
-            break;
-          case "F10":
-          case 121 :
-            event.preventDefault();
-            // Add your code here for F10 key
-            console.log("You Pressed F10");
-            break;
-                
-          case "F11":
-          case 122 :
-            // event.preventDefault();
-            // Add your code here for F11 key
-            console.log("You Pressed F11");
-            break;      
-          default:
+    const handleKeyDown = (event) => {
+      switch (event.keyCode || event.code) {
+        case 107: // Add (Numpad)
+          event.preventDefault();
+          // Add your code here for the corresponding key
+          console.log("You Pressed +");
           break;
-        }
+        case 106: // Multiply (Numpad)
+          event.preventDefault();
+          // Add your code here for the corresponding key
+          console.log("You Pressed *");
+          qteRef.current.select();
 
-      };
-  
-      // Add event listener when the component mounts
-      window.addEventListener("keydown", handleKeyDown);
-  
-      // Clean up the event listener when the component unmounts
-      return () => {
-        window.removeEventListener("keydown", handleKeyDown);
-      };
-      
+          break;
+        case 109: // Minus (Numpad)
+          event.preventDefault();
+          // Add your code here for the corresponding key
+          console.log("You Pressed -");
+
+          break;
+
+        case 112:
+          event.preventDefault();
+          // Add your code here for F1 key
+          console.log("You Pressed F1");
+          break;
+        case 113:
+          event.preventDefault();
+          // Add your code here for F2 key
+          console.log("You Pressed F2");
+          // fermer ou afficher la fenetre infoArticle
+          setInfoArticle(!InfoArticle);
+
+          break;
+        case 115:
+          event.preventDefault();
+          // Add your code here for F4 key
+          console.log("You Pressed F4");
+          setListeBon(!listeBon);
+          break;
+        case 116:
+          event.preventDefault();
+          // Add your code here for F5 key
+          console.log("You Pressed F5");
+          break;
+        case 119:
+          event.preventDefault();
+          // Add your code here for F8 key
+          console.log("You Pressed F8");
+          PrixRef.current.select();
+          break;
+        case 121:
+          event.preventDefault();
+          // Add your code here for F10 key
+          console.log("You Pressed F10");
+          break;
+
+        case 122:
+          // event.preventDefault();
+          // Add your code here for F11 key
+          console.log("You Pressed F11");
+          break;
+        default:
+          break;
+      }
+    };
+
+    // Add event listener when the component mounts
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [InfoArticle, listeBon]);
 
   const HandelArticl = (e) => {
@@ -507,7 +509,7 @@ export default function ComptoireNav() {
             </h5>
             <select
               className="w-32 border-none h-6"
-              value={client}
+              value={client[0]}
               onChange={onClientSelect}
             >
               {/* Loop through client */}

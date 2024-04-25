@@ -14,7 +14,32 @@ export default function ComptoireTable() {
   const [searchTermPrice, setSearchTermPrice] = useState("");
   const [searchTermQuantity, setSearchTermQuantity] = useState("");
   const [searchTermTotal, setSearchTermTotal] = useState("");
-  const { data, setData, cbRef, PrixRef, resultRef, lastItemSelected, setLastItemSelected } = useData();
+  const {
+    data,
+    setData,
+    cbRef,
+    setInput,
+    PrixRef,
+    resultRef,
+    lastItemSelected,
+    setLastItemSelected,
+  } = useData();
+  console.log(data.length);
+
+  // re-render the component when the lastItemSelected changes
+  useEffect(() => {
+    setLastItemSelected(data.length);
+    // Loop through data array and check if the Qte is less than 1 then remove the item from the data array
+    data.forEach((item, index) => {
+      if (item.quantity < 1) {
+        setData((prevData) => {
+          let newData = [...prevData]; // Create a copy of the data
+          newData.splice(index, 1); // Remove the item
+          return newData; // Return the new data
+        });
+      }
+    });
+  }, [data]);
 
   // Filtrage des données basé sur les termes de recherche
   const filteredData = data.filter(
@@ -38,9 +63,12 @@ export default function ComptoireTable() {
           total: PrixRef.current.value,
         },
       ]);
-      setLastItemSelected(lastItemSelected + 1)
+      // setLastItemSelected(lastItemSelected + 1)
       // Effacer le contenu de l'input
-      PrixRef.current.value = 0;
+      // attendre 0.1s pour que le state soit mis à jour
+      setTimeout(() => {
+        PrixRef.current.value = 0;
+      }, 100);
       //selectionner le code barre
       cbRef.current.select();
       // Enlever l'event listener
@@ -48,8 +76,41 @@ export default function ComptoireTable() {
     }
   };
 
+  const handleDoubleClick = (index) => {
+    setLastItemSelected(index + 1);
+    // Charger les données de l'article selectionné dans le state input
+    if (data[index].article === "Divers") {
+      setInput({
+        art: "",
+        prix: data[index].price,
+        qte: data[index].quantity,
+        cb: 0,
+      });
+      return;
+    }
+
+    setInput({
+      art: data[index].article,
+      qte: data[index].quantity,
+      prix: data[index].price,
+      cb: 0,
+    });
+  };
+
   const handleAjouterBtn = () => {};
-  const handleEffacerBtn = () => {};
+  const handleEffacerBtn = () => {
+    // remove the lastSelectedItem from the data array (find the index of the lastSelectedItem and remove it)
+    if (lastItemSelected === 0) {
+      alert("Tableau d'Articles est VIDE!");
+      return; // if there is no item selected return (do nothing)
+    }
+
+    setData((prevData) => {
+      let newData = [...prevData]; // Create a copy of the data
+      newData.splice(lastItemSelected - 1, 1); // Remove the item
+      return newData; // Return the new data
+    });
+  };
   const handleModifierBtn = () => {};
 
   // Ajouter un article Divers dans la liste des articles
@@ -132,7 +193,8 @@ export default function ComptoireTable() {
                 <tr
                   key={index}
                   tabIndex="0"
-                  className={lastItemSelected === index+1 ? "focused-row " : ""} {... index % 2 === 0 ? "bg-black" : "bg-gray-100"}
+                  className={`${lastItemSelected === index + 1 ? "border-2 border-blue-300 bg-blue-50" : ""} ${index % 2 === 0 ? "bg-gray-100" : "bg-gray-200"} ${"hover:bg-blue-100 transition-colors ease-in-out cursor-pointer"}`}
+                  onDoubleClick={() => handleDoubleClick(index)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.article}

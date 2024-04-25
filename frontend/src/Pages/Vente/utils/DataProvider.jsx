@@ -6,8 +6,16 @@ const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
   const cbRef = useRef(null);
+  const qteRef = useRef(null);
   const PrixRef = useRef(null);
   const resultRef = useRef(null);
+  const [input, setInput] = useState({
+    art: "",
+    qte: 1,
+    id: 0,
+    prix: 0,
+    cb: 0,
+  });
   const [InfoArticle, setInfoArticle] = useState(false); // cest pour le button F2
   const [expression, setExpression] = useState(""); // cela cest pour l'expression de calculatrice (EQUATION)
   const [result, setResult] = useState(""); // cela cest la resultat de l'equation
@@ -32,8 +40,11 @@ export const DataProvider = ({ children }) => {
     <DataContext.Provider
       value={{
         cbRef,
+        qteRef,
         resultRef,
         PrixRef,
+        input,
+        setInput,
         InfoArticle,
         setInfoArticle,
         expression,
