@@ -24,22 +24,16 @@ export default function ComptoireTable() {
     lastItemSelected,
     setLastItemSelected,
   } = useData();
+  
   console.log(data.length);
-
+  console.log(lastItemSelected);
   // re-render the component when the lastItemSelected changes
   useEffect(() => {
+
     setLastItemSelected(data.length);
-    // Loop through data array and check if the Qte is less than 1 then remove the item from the data array
-    data.forEach((item, index) => {
-      if (item.quantity < 1) {
-        setData((prevData) => {
-          let newData = [...prevData]; // Create a copy of the data
-          newData.splice(index, 1); // Remove the item
-          return newData; // Return the new data
-        });
-      }
-    });
-  }, [data]);
+
+
+  }, [data.length]);
 
   // Filtrage des données basé sur les termes de recherche
   const filteredData = data.filter(

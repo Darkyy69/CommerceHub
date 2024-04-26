@@ -56,6 +56,48 @@ export default function ComptoireBody() {
     return article.find((item) => item.barrcode === codebare) !== undefined;
   };
 
+  const handleOnBlur = (e) => {
+    // switch (e.target.name) un autre scénario pour gérer les événements de perte de focus
+    switch (e.target.name) {
+      case "cb":
+        // alert("Scénario de perte de focus pour le champ 'cb'");
+        // Vérifier si input.cb.length >7
+        if (input.cb.length > 7) {
+          
+          // Appeler VerifierCodeBare avec le code-barres actuel
+          if (VerifierCodeBare(input.cb)) {
+            // Le code-barres existe, focus sur le champ de quantité
+            qteRef.current.select();
+            // set l'input 'art' avec le nom de l'article correspondant et l'ID et son prix
+            const selectedItem = article.find(
+              (item) => item.barrcode === input.cb
+            );
+            setInput((prev) => ({
+              ...prev,
+              art: selectedItem.disignation,
+              id: selectedItem.id,
+              prix: selectedItem.P_vente,
+            }));
+          
+          }else {
+            // Le code-barres n'existe pas, setAjouter(true) pour ouvrir la fenêtre d'ajout d'un article
+            setAjouter(true);
+            alert(
+              "Article n'existe pas...Ouverture de la fenetre AjouterArticle"
+            );
+          }
+        }
+        
+        break;
+      case "qte":
+        // alert("Scénario de perte de focus pour le champ 'qte'");
+        break;
+      default:
+        break;
+    }
+  
+  };
+
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       if (input.cb.length === 13) {
@@ -135,7 +177,10 @@ export default function ComptoireBody() {
       } else {
         alert("Article n'existe pas");
         setInput({ art: "", qte: 1, id: 0, cb: 0, prix: 0 }); //initialisation
-        cbRef.current.select();
+        setTimeout(() => {
+          // selectionner le champ code bare
+          cbRef.current.select();
+        }, 100);
       }
     }
   };
@@ -298,6 +343,7 @@ export default function ComptoireBody() {
               type="text"
               ref={cbRef}
               name="cb"
+              onBlur={handleOnBlur}
               onKeyDown={handleKeyPress}
               value={input.cb}
               onChange={HandelInput}
@@ -312,6 +358,7 @@ export default function ComptoireBody() {
               name="qte"
               onChange={HandelInput}
               onKeyDown={handleKeyPressQte}
+              handleOnBlur={handleOnBlur}
               value={input.qte}
             />
           </div>

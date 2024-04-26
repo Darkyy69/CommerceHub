@@ -118,7 +118,24 @@ export default function ComptoireNav() {
           event.preventDefault();
           // Add your code here for the corresponding key
           console.log("You Pressed -");
+          // remove one Qte from the lastSelectedItem data array (find the index of the lastSelectedItem and -1 from it)
+          // if (lastItemSelected === 0) {
+          //   alert("Tableau d'Articles est VIDE!");
+          //   console.log(lastItemSelected + " YAW AW");
+          //   return; // if there is no item selected return (do nothing)
+          // }
+          if( lastItemSelected >= 1){
 
+            setData((prev) => {
+              const newData = [...prev];
+              newData[lastItemSelected - 1].quantity -= 1;
+              if(newData[lastItemSelected - 1].quantity === 0){
+                newData.splice(lastItemSelected - 1, 1);
+              }
+              return newData;
+            });
+          }
+            
           break;
 
         case 112:
@@ -174,7 +191,7 @@ export default function ComptoireNav() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [InfoArticle, listeBon]);
+  }, [InfoArticle, listeBon, lastItemSelected]);
 
   const HandelArticl = (e) => {
     e.preventDefault();
