@@ -10,6 +10,7 @@ import {
 import { useData } from "./DataProvider";
 
 export default function ComptoireTable() {
+  const Currency = "DA";
   const [searchTermArticle, setSearchTermArticle] = useState("");
   const [searchTermPrice, setSearchTermPrice] = useState("");
   const [searchTermQuantity, setSearchTermQuantity] = useState("");
@@ -24,15 +25,12 @@ export default function ComptoireTable() {
     lastItemSelected,
     setLastItemSelected,
   } = useData();
-  
-  console.log(data.length);
-  console.log(lastItemSelected);
+
+  // console.log(data.length);
+  // console.log(lastItemSelected);
   // re-render the component when the lastItemSelected changes
   useEffect(() => {
-
     setLastItemSelected(data.length);
-
-
   }, [data.length]);
 
   // Filtrage des données basé sur les termes de recherche
@@ -193,14 +191,14 @@ export default function ComptoireTable() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.article}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.price}
+                  <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                    {item.price} {Currency}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                     {item.quantity}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.total}
+                  <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                    {item.total} {Currency}
                   </td>
                 </tr>
               ))}

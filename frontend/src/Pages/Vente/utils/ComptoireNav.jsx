@@ -10,7 +10,7 @@ import {
   FaCalculator,
 } from "react-icons/fa";
 import { useData } from "./DataProvider";
-import { data } from "autoprefixer";
+import Calculatrice from "./Calculatrice";
 
 export default function ComptoireNav() {
   const [client, setClient] = useState([]);
@@ -70,8 +70,14 @@ export default function ComptoireNav() {
   const [date, time] = dateEtHeureActuelles.split(" ");
   const { setShowCalculatrice } = useData();
   const { qteRef, PrixRef } = useData();
-  const { setData, data, lastItemSelected, InfoArticle, setInfoArticle } =
-    useData();
+  const {
+    setData,
+    data,
+    lastItemSelected,
+    InfoArticle,
+    setInfoArticle,
+    ShowCalculatrice,
+  } = useData();
   const componentRef = useRef(null);
 
   const HandelInput = (e) => {
@@ -104,8 +110,19 @@ export default function ComptoireNav() {
       switch (event.keyCode || event.code) {
         case 107: // Add (Numpad)
           event.preventDefault();
-          // Add your code here for the corresponding key
           console.log("You Pressed +");
+          if (lastItemSelected >= 1) {
+            setData((prev) => {
+              const newData = [...prev];
+              newData[lastItemSelected - 1].quantity =
+                +newData[lastItemSelected - 1].quantity + 1;
+              newData[lastItemSelected - 1].total =
+                newData[lastItemSelected - 1].quantity *
+                newData[lastItemSelected - 1].price;
+              return newData;
+            });
+          }
+
           break;
         case 106: // Multiply (Numpad)
           event.preventDefault();
@@ -116,26 +133,22 @@ export default function ComptoireNav() {
           break;
         case 109: // Minus (Numpad)
           event.preventDefault();
-          // Add your code here for the corresponding key
           console.log("You Pressed -");
-          // remove one Qte from the lastSelectedItem data array (find the index of the lastSelectedItem and -1 from it)
-          // if (lastItemSelected === 0) {
-          //   alert("Tableau d'Articles est VIDE!");
-          //   console.log(lastItemSelected + " YAW AW");
-          //   return; // if there is no item selected return (do nothing)
-          // }
-          if( lastItemSelected >= 1){
 
+          if (lastItemSelected >= 1) {
             setData((prev) => {
               const newData = [...prev];
               newData[lastItemSelected - 1].quantity -= 1;
-              if(newData[lastItemSelected - 1].quantity === 0){
+              newData[lastItemSelected - 1].total =
+                newData[lastItemSelected - 1].quantity *
+                newData[lastItemSelected - 1].price;
+              if (newData[lastItemSelected - 1].quantity === 0) {
                 newData.splice(lastItemSelected - 1, 1);
               }
               return newData;
             });
           }
-            
+
           break;
 
         case 112:
@@ -513,6 +526,9 @@ export default function ComptoireNav() {
     </div>
   );
 
+  // la fenetre de calcultrice apparait dans le clique de calc
+  const fenetreCalculatrice = ShowCalculatrice && <Calculatrice />;
+
   return (
     <div className="h-fit w-full">
       <div className="flex w-full justify-between gap-5">
@@ -607,6 +623,7 @@ export default function ComptoireNav() {
       </div>
 
       {FenetreListeBon}
+      {fenetreCalculatrice}
     </div>
   );
 }

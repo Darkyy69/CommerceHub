@@ -19,32 +19,33 @@ class Famille(models.Model):
     codif = models.CharField(max_length=10)
     disignation = models.CharField(max_length=50)
     def __str__(self):
-        return 'Famille: ' + str(self.pk)
+        return 'Famille: ' + str(self.disignation)
     
 class S_famille(models.Model):
     id_famille = models.ForeignKey(Famille, on_delete=models.CASCADE)
     codif = models.CharField(max_length=10)
     disignation = models.CharField(max_length=50)
     def __str__(self):
-        return 'S_famille: ' + str(self.pk)
+        return 'S_famille: ' + str(self.disignation)
     
-class S_article(models.Model):
+class Article(models.Model):
     codif = models.CharField(max_length=10)
     disignation = models.CharField(max_length=50)
     def __str__(self):
-        return 'S_article: ' + str(self.pk)
+        return 'Article: ' + str(self.disignation)
 
-class Article (models.Model):
+class S_article (models.Model):
     id_S_famille = models.ForeignKey(S_famille, on_delete=models.CASCADE)
-    id_S_article = models.ForeignKey(S_article, on_delete=models.CASCADE)
+    id_Article = models.ForeignKey(Article, on_delete=models.CASCADE)
     codif = models.CharField(max_length=10, blank=False)
     disignation = models.CharField(max_length=50, blank=False)
-    P_achat = models.FloatField()
-    P_vente = models.FloatField(blank=False, validators=[MinValueValidator(limit_value=0)]) # >0
-    P_min = models.FloatField()
+    # P_achat = models.FloatField(blank=False, validators=[MinValueValidator(limit_value=0)])
+    P_achat = models.FloatField(blank=False, default=0.0)
+    P_vente = models.FloatField(blank=False)
+    P_min = models.FloatField(blank=False, default=0.0)
     barrcode = models.CharField(max_length=13, validators=[validate_barcode], unique=True)
     fournisseur_best = models.IntegerField()
 
     def __str__(self):
-        return 'Article: ' + str(self.pk) + ' - Barrcode: ' + str(self.barrcode)
+        return 'S_article: ' + str(self.disignation) + ' - Barrcode: ' + str(self.barrcode)
     

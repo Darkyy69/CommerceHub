@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { FaCheck, FaPen, FaPlus, FaMinus, FaTimes } from "react-icons/fa";
 import axios from "axios";
 import { useData } from "./DataProvider";
-import Calculatrice from "./Calculatrice";
 
 export default function ComptoireBody() {
+  const [articleLookup, setArticleLookup] = useState({});
   const [article, setArticle] = useState([]);
-
   const [ajouter, setAjouter] = useState(false);
   const [showModal, setShowModal] = useState(true);
   const handleClose = () => {
@@ -23,22 +22,25 @@ export default function ComptoireBody() {
     qteRef,
     resultRef,
     PrixRef,
-    ShowCalculatrice,
     InfoArticle,
     setInfoArticle,
     data,
     setData,
     lastItemSelected,
-    setLastItemSelected,
   } = useData();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          "http://127.0.0.1:8000/api/comptoire/entite-marchandise/article/"
+          "http://127.0.0.1:8000/api/comptoire/entite-marchandise/s-article/"
         );
         setArticle(res.data);
+        const newArticleLookup = {};
+        res.data.forEach((item) => {
+          newArticleLookup[item.barrcode] = item;
+        });
+        setArticleLookup(newArticleLookup);
       } catch (err) {
         console.error("Error fetching data:", err);
       }
@@ -46,48 +48,35 @@ export default function ComptoireBody() {
 
     fetchData();
     cbRef.current.select();
+    console.log("in useEffect");
   }, []);
 
-  console.log(article);
-
-  // verfier lexistance de code bare entre
-  const VerifierCodeBare = (codebare) => {
-    // Utiliser find() pour rechercher un élément avec le code-barres donné
-    return article.find((item) => item.barrcode === codebare) !== undefined;
-  };
-
   const handleOnBlur = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
     // switch (e.target.name) un autre scénario pour gérer les événements de perte de focus
-    switch (e.target.name) {
+    switch (name) {
       case "cb":
-        // alert("Scénario de perte de focus pour le champ 'cb'");
-        // Vérifier si input.cb.length >7
-        if (input.cb.length > 7) {
-          
-          // Appeler VerifierCodeBare avec le code-barres actuel
-          if (VerifierCodeBare(input.cb)) {
-            // Le code-barres existe, focus sur le champ de quantité
-            qteRef.current.select();
-            // set l'input 'art' avec le nom de l'article correspondant et l'ID et son prix
-            const selectedItem = article.find(
-              (item) => item.barrcode === input.cb
-            );
+        if (value.length > 7) {
+          const selectedItem = articleLookup[value];
+
+          if (selectedItem) {
             setInput((prev) => ({
               ...prev,
+              cb: selectedItem.barrcode,
               art: selectedItem.disignation,
               id: selectedItem.id,
               prix: selectedItem.P_vente,
             }));
-          
-          }else {
-            // Le code-barres n'existe pas, setAjouter(true) pour ouvrir la fenêtre d'ajout d'un article
+
+            qteRef.current.select();
+          } else {
             setAjouter(true);
             alert(
               "Article n'existe pas...Ouverture de la fenetre AjouterArticle"
             );
           }
         }
-        
         break;
       case "qte":
         // alert("Scénario de perte de focus pour le champ 'qte'");
@@ -95,43 +84,20 @@ export default function ComptoireBody() {
       default:
         break;
     }
-  
   };
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
-      if (input.cb.length === 13) {
-        // Appeler VerifierCodeBare avec le code-barres actuel
-        if (VerifierCodeBare(input.cb)) {
-          // Le code-barres existe, focus sur le champ de quantité
-          qteRef.current.select();
-          // set l'input 'art' avec le nom de l'article correspondant et l'ID et son prix
-          const selectedItem = article.find(
-            (item) => item.barrcode === input.cb
-          );
-          setInput((prev) => ({
-            ...prev,
-            art: selectedItem.disignation,
-            id: selectedItem.id,
-            prix: selectedItem.P_vente,
-          }));
-        } else {
-          // Le code-barres n'existe pas, setAjouter(true) pour ouvrir la fenêtre d'ajout d'un article
-          setAjouter(true);
-          alert(
-            "Article n'existe pas...Ouverture de la fenetre AjouterArticle"
-          );
-        }
-      }
+      qteRef.current.select();
     } else {
-      // Réinitialiser l'état ajouter à true si un code-barres incorrect est entré
+      // Réinitialiser l'état ajouter à FALSE si un code-barres incorrect est entré
       setAjouter(false);
     }
   };
 
   const handleKeyPressQte = (event) => {
     if (event.key === "Enter") {
-      const selectedItem = article.find((item) => item.barrcode === input.cb);
+      const selectedItem = articleLookup[cbRef.current.value];
       if (selectedItem) {
         setInput((prev) => ({
           ...prev,
@@ -149,8 +115,8 @@ export default function ComptoireBody() {
               item.article === selectedItem.disignation
                 ? {
                     ...item,
-                    quantity: +item.quantity + +input.qte,
-                    total: (+item.quantity + +input.qte) * +item.price,
+                    quantity: +input.qte,
+                    total: +input.qte * +item.price,
                   }
                 : item
             )
@@ -169,14 +135,31 @@ export default function ComptoireBody() {
         }
         // Réinitialiser les champs d'entrée
         setInput({ art: "", qte: 1, id: 0, cb: 0, prix: 0 }); //initialisation
+        cbRef.current.value = 0;
         // attendre 0.2s pour que le champ code bare soit selectionner
         setTimeout(() => {
           // selectionner le champ code bare
           cbRef.current.select();
         }, 100);
       } else {
-        alert("Article n'existe pas");
+        if (cbRef.current.value === "0" && lastItemSelected >= 1) {
+          // set the data item of index lastitemselected - 1 to the new quantity
+          setData((prevData) =>
+            prevData.map((item, index) =>
+              index === lastItemSelected - 1
+                ? {
+                    ...item,
+                    quantity: +input.qte,
+                    total: +input.qte * +item.price,
+                  }
+                : item
+            )
+          );
+        } else {
+          alert("Article n'existe pas");
+        }
         setInput({ art: "", qte: 1, id: 0, cb: 0, prix: 0 }); //initialisation
+        cbRef.current.value = 0;
         setTimeout(() => {
           // selectionner le champ code bare
           cbRef.current.select();
@@ -189,7 +172,6 @@ export default function ComptoireBody() {
   const HandelInput = (e) => {
     const name = e.target.name;
     let value = e.target.value;
-    console.log(value);
     // Vérifier si la valeur est numérique
     if (!isNaN(value)) {
       // Limiter la longueur à 13 chiffres pour le champ 'cb'
@@ -202,7 +184,7 @@ export default function ComptoireBody() {
       setInput((val) => ({ ...val, [name]: "" }));
     }
   };
-
+  console.log("YAW");
   //la fonction pour selecionner un artilce sont id et famille automatiquemet s'affiche
   const HandelArticl = (e) => {
     e.preventDefault();
@@ -262,6 +244,79 @@ export default function ComptoireBody() {
     setNvInput({});
     setAjouter(false);
   };
+
+  // La fenetre d'ajout d'article apparait dans le cas de l'ajout d'un article (code barre non trouvé)
+
+  const fenetreAjouterArticle = ajouter && (
+    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-2/5 h-72 bg-gray-100 rounded-lg shadow-lg p-6">
+      <div className="flex justify-between items-center mb-2">
+        <h1 className="absolute top-2 left-2 text-xl font-bold">
+          Ajouter Article
+        </h1>
+        <button
+          className="absolute top-2 right-2 px-4 py-2 bg-red-500 text-white rounded-md"
+          onClick={handleClose}
+        >
+          X
+        </button>
+      </div>
+
+      <div className="flex flex-col gap-2 mt-10">
+        <div className="flex flex-row justify-between items-center gap-1">
+          <label htmlFor="">Famille:</label>
+          <select
+            name="Famille"
+            id=""
+            className="border border-gray-300 h-8 w-56 "
+          ></select>
+        </div>
+
+        <div className="flex flex-row justify-between items-center gap-1">
+          <label htmlFor="">Article:</label>
+          <input
+            name="article"
+            id=""
+            className="border border-gray-300 h-8 w-56 ml-1 "
+            onChange={HandelNvInput}
+          ></input>
+        </div>
+
+        <div className="flex flex-row justify-between items-center gap-1">
+          <label htmlFor="">CodeBarre:</label>
+          <input
+            name="CodeBarre"
+            id=""
+            className="border border-gray-300 h-8 text-center"
+            value={cbRef.current.value}
+            disabled
+          ></input>
+        </div>
+        <div className="flex flex-row justify-between items-center gap-1">
+          <label htmlFor="">Prix:</label>
+          <input
+            name="prix"
+            id=""
+            className="border border-gray-300 h-8 text-right"
+            onChange={HandelNvInput}
+          ></input>
+        </div>
+      </div>
+      <div className="flex items-center justify-center mt-5">
+        <button
+          className="px-4 py-2 bg-green-500 text-white rounded-md"
+          onClick={HandelAjouterElement}
+        >
+          <FaCheck />
+        </button>
+        <button
+          className="px-4 py-2 bg-red-500 text-white rounded-md ml-2"
+          onClick={handleClose}
+        >
+          <FaTimes />
+        </button>
+      </div>
+    </div>
+  );
 
   // la fenetre de article info apparait dans le cas de clique sur F2
   const FenetreInfoArticle = InfoArticle && (
@@ -329,9 +384,6 @@ export default function ComptoireBody() {
     </div>
   );
 
-  // la fenetre de calcultrice apparait dans le clique de calc
-  const fenetreCalculatrice = ShowCalculatrice && <Calculatrice />;
-
   return (
     <div className="flex flex-row justify-between items-center w-full h-fit my-3">
       <div className="flex flex-col h-full items-start justify-center gap-5  bg-blue-500 p-3">
@@ -340,13 +392,12 @@ export default function ComptoireBody() {
             <p className="text-lg font-bold">Code:</p>
             <input
               className="w-60 h-12 text-center text-xl font-bold"
-              type="text"
+              type="number"
               ref={cbRef}
               name="cb"
               onBlur={handleOnBlur}
               onKeyDown={handleKeyPress}
-              value={input.cb}
-              onChange={HandelInput}
+              maxLength={13}
             />
           </div>
           <div className="flex flex-row justify-center items-center gap-1">
@@ -358,7 +409,7 @@ export default function ComptoireBody() {
               name="qte"
               onChange={HandelInput}
               onKeyDown={handleKeyPressQte}
-              handleOnBlur={handleOnBlur}
+              onBlur={handleOnBlur}
               value={input.qte}
             />
           </div>
@@ -449,7 +500,7 @@ export default function ComptoireBody() {
       </div>
 
       {FenetreInfoArticle}
-      {fenetreCalculatrice}
+      {fenetreAjouterArticle}
     </div>
   );
 }
