@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
   FaSearch,
@@ -11,6 +11,7 @@ import {
 } from "react-icons/fa";
 import { useData } from "./DataProvider";
 import Calculatrice from "./Calculatrice";
+import Clock from "./Clock";
 
 export default function ComptoireNav() {
   const [client, setClient] = useState([]);
@@ -72,7 +73,7 @@ export default function ComptoireNav() {
   const { qteRef, PrixRef } = useData();
   const {
     setData,
-    data,
+    // data,
     lastItemSelected,
     InfoArticle,
     setInfoArticle,
@@ -90,15 +91,6 @@ export default function ComptoireNav() {
   const onClientSelect = (e) => {
     setClient(e.target.value);
   };
-
-  useEffect(() => {
-    // Mettre à jour la date toutes les secondes
-    const interval = setInterval(() => {
-      setDateEtHeureActuelles(getCurrentDateTime());
-    }, 1000);
-    // Nettoyer l'intervalle lors du démontage du composant
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     axios
@@ -410,7 +402,6 @@ export default function ComptoireNav() {
             <div className="flex justify-center items-center gap-3">
               <input
                 className="cursor-pointer"
-                inline
                 type="radio"
                 name="radioFilter"
                 id="aujordhui"
@@ -421,7 +412,6 @@ export default function ComptoireNav() {
               </label>
               <input
                 className="cursor-pointer"
-                inline
                 type="radio"
                 name="radioFilter"
                 id="semaine"
@@ -432,7 +422,6 @@ export default function ComptoireNav() {
               </label>
               <input
                 className="cursor-pointer"
-                inline
                 type="radio"
                 name="radioFilter"
                 id="mois"
@@ -443,7 +432,6 @@ export default function ComptoireNav() {
               </label>
               <input
                 className="cursor-pointer"
-                inline
                 type="radio"
                 name="radioFilter"
                 id="annee"
@@ -475,15 +463,9 @@ export default function ComptoireNav() {
           >
             <thead className="sticky top-0 bg-gray-50">
               <tr>
-                <th>
-                  <td className="p-4">Date</td>
-                </th>
-                <th>
-                  <td className="p-4">Propriétaire</td>
-                </th>
-                <th>
-                  <td className="p-4">Montant</td>
-                </th>
+                <th className="p-4">Date</th>
+                <th className="p-4">Propriétaire</th>
+                <th className="p-4">Montant</th>
               </tr>
             </thead>
 
@@ -591,15 +573,50 @@ export default function ComptoireNav() {
           <button className=" w-12 h-12 border border-gray-500 hover:bg-blue-300 p-1 flex items-center justify-center bg-gray-300">
             F11
           </button>
-          <button className=" w-12 h-12 border border-gray-500 hover:bg-blue-300 p-1 flex items-center justify-center bg-gray-300">
+          <button
+            className=" w-12 h-12 border border-gray-500 hover:bg-blue-300 p-1 flex items-center justify-center bg-gray-300"
+            onClick={() => {
+              if (lastItemSelected >= 1) {
+                setData((prev) => {
+                  const newData = [...prev];
+                  newData[lastItemSelected - 1].quantity =
+                    +newData[lastItemSelected - 1].quantity + 1;
+                  newData[lastItemSelected - 1].total =
+                    newData[lastItemSelected - 1].quantity *
+                    newData[lastItemSelected - 1].price;
+                  return newData;
+                });
+              }
+            }}
+          >
             <FaPlus style={{ color: "green" }} />
           </button>
-          <button className=" w-12 h-12 border border-gray-500 hover:bg-blue-300 p-1 flex items-center justify-center bg-gray-300">
+          <button
+            className=" w-12 h-12 border border-gray-500 hover:bg-blue-300 p-1 flex items-center justify-center bg-gray-300"
+            onClick={() => {
+              if (lastItemSelected >= 1) {
+                setData((prev) => {
+                  const newData = [...prev];
+                  newData[lastItemSelected - 1].quantity -= 1;
+                  newData[lastItemSelected - 1].total =
+                    newData[lastItemSelected - 1].quantity *
+                    newData[lastItemSelected - 1].price;
+                  if (newData[lastItemSelected - 1].quantity === 0) {
+                    newData.splice(lastItemSelected - 1, 1);
+                  }
+                  return newData;
+                });
+              }
+            }}
+          >
             <FaMinus style={{ color: "red" }} />
           </button>
           <button
             className=" w-12 h-12 border border-gray-500 hover:bg-blue-300 p-1 flex items-center justify-center bg-gray-300"
             style={{ color: "green", fontSize: "20px" }}
+            onClick={() => {
+              qteRef.current.select();
+            }}
           >
             *
           </button>
@@ -614,11 +631,7 @@ export default function ComptoireNav() {
         </div>
 
         <div className="sm:text-lg lg:text-2xl font-semibold p-2 bg-green-500 flex items-center justify-center h-24 w-1/6">
-          <h2 className="text-center">
-            {date}
-            <br />
-            {time}
-          </h2>
+          <Clock />
         </div>
       </div>
 

@@ -9,25 +9,21 @@ import {
 } from "react-icons/fa";
 import { useData } from "./DataProvider";
 
-export default function ComptoireTable() {
+export function ComptoireTable() {
   const Currency = "DA";
   const [searchTermArticle, setSearchTermArticle] = useState("");
   const [searchTermPrice, setSearchTermPrice] = useState("");
   const [searchTermQuantity, setSearchTermQuantity] = useState("");
   const [searchTermTotal, setSearchTermTotal] = useState("");
-  const {
-    data,
-    setData,
-    cbRef,
-    setInput,
-    PrixRef,
-    resultRef,
-    lastItemSelected,
-    setLastItemSelected,
-  } = useData();
+  const { data, setData } = useData();
+  const { cbRef } = useData();
+  const { setInput } = useData();
+  const { PrixRef } = useData();
+  const { resultRef } = useData();
+  const { lastItemSelected } = useData();
+  const { setLastItemSelected } = useData();
 
-  // console.log(data.length);
-  // console.log(lastItemSelected);
+  console.log("in CompTable");
   // re-render the component when the lastItemSelected changes
   useEffect(() => {
     setLastItemSelected(data.length);
@@ -68,7 +64,7 @@ export default function ComptoireTable() {
     }
   };
 
-  const handleDoubleClick = (index) => {
+  const handleRowClick = (index) => {
     setLastItemSelected(index + 1);
     // Charger les données de l'article selectionné dans le state input
     if (data[index].article === "Divers") {
@@ -186,7 +182,7 @@ export default function ComptoireTable() {
                   key={index}
                   tabIndex="0"
                   className={`${lastItemSelected === index + 1 ? "border-2 border-blue-300 bg-blue-50" : ""} ${index % 2 === 0 ? "bg-gray-100" : "bg-gray-200"} ${"hover:bg-blue-100 transition-colors ease-in-out cursor-pointer"}`}
-                  onDoubleClick={() => handleDoubleClick(index)}
+                  onClick={() => handleRowClick(index)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.article}
@@ -264,3 +260,4 @@ export default function ComptoireTable() {
     </div>
   );
 }
+export default React.memo(ComptoireTable);
