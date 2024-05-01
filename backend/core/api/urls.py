@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from Comptoire.api.urls import Documents_router, Entite_Marchandise_router, Entite_Personnes_router, Stock_router, Remise_router, Payement_router, Ligne_Document_router, Info_Extra_router 
+from Comptoire.api.urls import Documents_router, Entite_Marchandise_router, Entite_Personnes_router, Stock_router, Remise_router, Payement_router, Ligne_Document_router, Info_Extra_router, Search_router
 from django.urls import path, include
 
 # router = DefaultRouter()
@@ -9,6 +9,7 @@ from django.urls import path, include
 urlpatterns = [
     # path('', include(router.urls)),
     # path('', include('Comptoire.api.urls')),
+    path('comptoire/search/', include(Search_router.urls)),
     path('comptoire/documents/', include(Documents_router.urls)),
     path('comptoire/entite-marchandise/', include(Entite_Marchandise_router.urls)),
     path('comptoire/entite-personnes/', include(Entite_Personnes_router.urls)),

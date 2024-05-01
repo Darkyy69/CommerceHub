@@ -8,6 +8,11 @@ from .views.ligne_document_views import *
 from .views.payement_views import *
 from .views.remise_views import *
 from .views.stock_views import *
+from .views.article_search import *
+
+# Router for Search
+Search_router = DefaultRouter()
+Search_router.register(r'autocomplete',AutocompleteViewSet, basename='search')
 
 # Router for Model Documents
 Documents_router = DefaultRouter()
