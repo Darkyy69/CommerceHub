@@ -1,5 +1,10 @@
+import os
+from dotenv import load_dotenv
 import sqlite3
 from elasticsearch import Elasticsearch
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Connect to SQLite database
 conn = sqlite3.connect('backend\db.sqlite3')
@@ -7,7 +12,7 @@ cursor = conn.cursor()
 
 # Elasticsearch authentication credentials
 username = 'elastic'
-password = 'X=rlwqh8f7O3_mUdpmBr'
+password = os.getenv('ELASTIC_PASSWORD')
 
 # SSL certificate path
 ssl_ca_path = 'http_ca.crt'
