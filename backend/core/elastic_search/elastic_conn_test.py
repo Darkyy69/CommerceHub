@@ -1,8 +1,13 @@
+import os
+from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Elasticsearch authentication credentials
 username = 'elastic'
-password = 'X=rlwqh8f7O3_mUdpmBr'
+password = os.getenv('ELASTIC_PASSWORD')
 
 # SSL certificate path
 ssl_ca_path = 'http_ca.crt'
