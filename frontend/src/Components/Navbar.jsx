@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { DarkMode } from "./DarkMode";
-import logo from "../assets/logo.png";
+import Logo from "../assets/Logo.svg";
+import ProfilePicture from "../assets/profile-picture-5.jpg";
 
 export const Navbar = () => {
-  const [selectedApp, setSelectedApp] = useState("")
+  const [selectedApp, setSelectedApp] = useState("");
   return (
     <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
       <div className="px-3 py-3 lg:px-5 lg:pl-3">
@@ -14,10 +15,12 @@ export const Navbar = () => {
             {/* Logo */}
             <a href="/Acceuil" className="flex ms-4 md:me-4">
               <img
-                src="https://flowbite.com/docs/images/logo.svg"
-                className="h-8 me-3"
+                // src="https://flowbite.com/docs/images/logo.svg"
+                src={Logo}
+                className="h-10 me-3"
                 alt="FlowBite Logo"
               />
+
               {/* <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
                 Commerce Hub
               </span> */}
@@ -357,7 +360,7 @@ const Account = () => {
           <span className="sr-only">Open user menu</span>
           <img
             className="w-8 h-8 rounded-full"
-            src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+            src={ProfilePicture}
             alt="user photo"
           ></img>
         </button>

@@ -8,6 +8,8 @@ import {
   FaSearch,
 } from "react-icons/fa";
 import { useData } from "./DataProvider";
+import Parameters from "../../../assets/Parameters.json"; // Lire le fichier Parameters.md pour plus d'informations
+import axios from "axios";
 
 export function ComptoireTable() {
   const Currency = "DA";
@@ -49,6 +51,7 @@ export function ComptoireTable() {
           price: PrixRef.current.value,
           quantity: 1,
           total: PrixRef.current.value,
+          id_S_article: 1,
         },
       ]);
       // setLastItemSelected(lastItemSelected + 1)
@@ -73,6 +76,7 @@ export function ComptoireTable() {
         prix: data[index].price,
         qte: data[index].quantity,
         cb: 0,
+        id: 1,
       });
       return;
     }
@@ -108,7 +112,77 @@ export function ComptoireTable() {
     // ajouter un event listener pour le bouton Entrer
     document.addEventListener("keydown", handleKeyDownPrix);
   };
-  const handleEnregistrerBtn = () => {};
+  const handleEnregistrerBtn = () => {
+    // Vérifier si le tableau d'articles est vide
+    if (data.length === 0) {
+      alert("Tableau d'Articles est VIDE!");
+      return;
+    }
+    // Prendre tous les articles et les envoyer à la base de données
+    const docObj = {
+      num: Parameters[0].num,
+      date: new Date(),
+      proprietaire: 1, // 1== PARTICULIER (Change later to the actual selected Client in ComptoireNav)
+      montant: resultRef.current.innerHTML,
+      type_payement: 4,
+      etat: 3,
+      imprime: 3,
+      editeur: 1,
+    };
+    const ligneDocObj = data.map((item) => {
+      return {
+        id_art: item.id_S_article,
+        qte: item.quantity,
+        prix: item.price,
+        montant: item.total,
+      };
+    });
+    // Create an object containing both docObj and ligneDocObj
+    const dataToSend = {
+      document: docObj,
+      ligneDocument: ligneDocObj,
+    };
+
+    // Send the data to the server
+    axios
+      .post(
+        "http://localhost:8000/comptoire/enregistrer/vente/bon-art-out/",
+        dataToSend
+      )
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+        // Retrieve existing data from local storage
+        let existingData = localStorage.getItem("dataToSend");
+        if (!existingData || existingData === "undefined") {
+          existingData = [];
+        } else {
+          existingData = JSON.parse(existingData);
+          if (!Array.isArray(existingData)) {
+            existingData = [existingData];
+          }
+          console.log(existingData);
+        }
+        // Merge existing data with new data
+        const newData = [...existingData, dataToSend];
+        console.log(newData);
+        // Store the merged data in local storage
+        localStorage.setItem("dataToSend", JSON.stringify(newData));
+      });
+    // Effacer le contenu de la table + les inputs
+    setData([]);
+    setInput({
+      art: "",
+      qte: 1,
+      id: 0,
+      prix: 0,
+      cb: 0,
+    });
+    //selectionner le code barre
+    cbRef.current.select();
+  };
 
   return (
     <div className="flex flex-col flex-grow">

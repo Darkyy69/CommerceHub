@@ -8,7 +8,7 @@ from .models_info_extra import *
 class Documents(models.Model):  # COMM0N 
     num = models.CharField(max_length=255) 
     date = models.DateTimeField()
-    propretaire = models.IntegerField()
+    proprietaire = models.IntegerField()
     montant = models.FloatField()
     type_payement = models.ForeignKey(TypePayement, on_delete=models.SET_NULL, null=True) 
     etat = models.ForeignKey(Etatoperations, on_delete=models.SET_NULL, null=True) 

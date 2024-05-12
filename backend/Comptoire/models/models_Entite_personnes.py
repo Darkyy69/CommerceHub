@@ -27,17 +27,17 @@ class Propreot(models.Model):  # COMM0N
 
 class Fournisseur(Propreot):
     def __str__(self):
-        return str(self.id)
+        return str(self.id) + ' - ' + str(self.nom)
     
 class Client(Propreot):
     def __str__(self):
-        return str(self.id)
+        return str(self.id) + ' - ' + str(self.nom)
     
 class Etablissement(Propreot):
     def __str__(self):
-        return str(self.id)
+        return str(self.id) + ' - ' + str(self.nom)
     
 class SousTraitent(Propreot):
     def __str__(self):
-        return str(self.id)
+        return str(self.id) + ' - ' + str(self.nom)
     

@@ -2,21 +2,22 @@ from django.shortcuts import render
 from .models.models_Entite_marchandise import *
 from .models.models_documents import *
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
 import json
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 
 from io import BytesIO
 from barcode import EAN13  # Choose appropriate barcode type
 import barcode
-from reportlab.graphics import renderPDF
-from svglib.svglib import svg2rlg  # svglib for parsing SVG to reportlab graphics
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 
 
 from django.apps import apps
 from Comptoire.models.models_ligneDocument import *
 from Comptoire.models.models_documents import *
+from Comptoire.models.models_info_extra import EtatsClient, Etatoperations, LiseEtatSortie, TypePayement
+
 
 # Create your views here.
 
@@ -25,10 +26,12 @@ def comptoire_view(request):
 
     return render(request,'comptoire.html', {'Articles':Articles})
 
-
+@csrf_exempt
+@require_POST
 def trait_enregistrer(request, modeFen, doc):
-    
     data = json.loads(request.body)
+    document_obj = data['document']
+    ligneDoc_obj = data['ligneDocument']
     match modeFen:
         case 'vente': # Vente
             match doc:
@@ -39,10 +42,16 @@ def trait_enregistrer(request, modeFen, doc):
                 case 'fact-av': # FactureAvoir
                     pass  
                 case 'bon-art-out': # BonArtOut
-                    
-                    var = BonArtOut.objects.create(data.num,data.date,data.propretaire,data.montant,data.type_payement,data.etat,data.imprime,data.editeur)
-                    LigneBonArtOut.objects.create(var.id,data.id_art,)
-                    #num == id
+                    doc_typePayement = TypePayement.objects.get(pk=document_obj['type_payement']) # getting the instance of the model
+                    doc_etat = Etatoperations.objects.get(pk=document_obj['etat']) # getting the instance of the model
+                    doc_imprime = LiseEtatSortie.objects.get(pk=document_obj['imprime']) # getting the instance of the model
+                    user = User.objects.get(pk=document_obj['editeur']) # Remove when user Auth is implemented and add request.user instead
+
+                    var = BonArtOut.objects.create(num=document_obj['num'], date=document_obj['date'], proprietaire=document_obj['proprietaire'], montant=document_obj['montant'], type_payement=doc_typePayement, etat=doc_etat, imprime=doc_imprime, editeur=user)
+                    var.num = str(var.pk) + var.num # After Creation of the object, set the num to the id of the object + the num
+                    var.save()
+                    for ligneDoc in ligneDoc_obj: # Each Doc has multiple LigneDoc                  
+                        LigneBonArtOut.objects.create(id_doc=var.id, id_art=ligneDoc['id_art'], qte=ligneDoc['qte'], prix=ligneDoc['prix'], montant=ligneDoc['montant'])
                 case 'bon-liv': # BonLivraison
                     pass    
 
@@ -65,7 +74,11 @@ def trait_enregistrer(request, modeFen, doc):
                 case 'bon-reception': # BonReception
                     pass
                 case 'bon-tran': # BonTranzition   
-                    pass                              
+                    pass        
+
+    return JsonResponse({'details': 'Data received'}, status=200)
+
+                                      
 
 
 # Fonction pour retourner les factures du client
@@ -113,237 +126,3 @@ def verifierDocument(request, doc, doc_id):
 def calculCreance():
     pass
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# from win32 import win32print
-import win32print
-
-from barcode import Code128
-from barcode.writer import ImageWriter
-
-def print_barcode(text, printer_name):
-    # Generate barcode image
-    code128 = Code128(text, writer=ImageWriter())
-    barcode_file = code128.save('barcode')
-
-    # Get the default printer
-    printer_info = win32print.GetDefaultPrinter()
-
-    # Specify the printer to use
-    printer_name = printer_info
-
-    # Open the printer
-    printer_handle = win32print.OpenPrinter(printer_name)
-
-    # Start a new print job
-    job_info = ('Python Print Job', None, printer_name)
-    job_handle = win32print.StartDocPrinter(printer_handle, 1, job_info)
-
-    # Start a new page
-    win32print.StartPagePrinter(printer_handle)
-
-    # Print the barcode image
-    dc = win32print.GetDC(printer_name)
-    dc.StartDoc('Python Print Job')
-    dc.StartPage()
-    dc.BitBlt((100, 100), (200, 200), barcode_file, (0, 0), win32print.SRCCOPY)
-    dc.EndPage()
-    dc.EndDoc()
-    dc.DeleteDC()
-
-    # End the print job
-    win32print.EndPagePrinter(printer_handle)
-    win32print.EndDocPrinter(printer_handle)
-    win32print.ClosePrinter(printer_handle)
-
-
-def win32print_test(request):
-    # Usage example
-    text_to_print = "123456789"
-    printer_name = "None"  # Specify the printer name if not using the default printer
-    print_barcode(text_to_print, printer_name)
-    return render(request,'test_method.html', {})
-
-
-from win32printing import Printer
-
-def test(request):
-    
-    font = {
-        "height": 12,
-    }
-    with Printer(linegap=1) as printer:
-        printer.text("--------------- RECEIPT ---------------\n", align="center", font_config=font)
-        printer.text("Date: March 11, 2024\n", font_config=font)
-        printer.text("Time: 12:00 PM\n\n", font_config=font)
-        printer.text("Items Purchased:\n", font_config=font)
-        printer.text("1. Product A           $10.00\n", font_config=font)
-        printer.text("2. Product B           $15.00\n", font_config=font)
-        printer.text("3. Product C           $20.00\n\n", font_config=font)
-        printer.text("Subtotal:                          $45\n", font_config=font)
-        printer.text("Tax (7%):                          $3.15\n", font_config=font)
-        printer.text("Total:                             $48.15\n\n", font_config=font)
-        printer.text("Thank you for your purchase!\n", font_config=font)
-        printer.text("Have a great day!\n", font_config=font)
-        # printer.new_page()
-
-    return render(request,'test_method.html', {})
-
-
-
-
-
-
-from reportlab.lib.pagesizes import letter, landscape
-from reportlab.pdfgen import canvas
-
-
-def print_pdf(request):
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename="thermal_print.pdf"'
-
-    # Create PDF document with letter page size (8.5 x 11 inches)
-    c = canvas.Canvas(response, pagesize=letter)
-
-    # Add content to the PDF
-    text_lines = [
-        "Line 1",
-        "Line 2",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        "Line 33",
-        "Line 3",
-        "Line 3",
-        "Line 3",
-        
-        # Add more lines as needed...
-    ]
-    y_position = 700  # Initial Y position for the first line
-
-    for line in text_lines:
-        c.drawString(100, y_position, line)
-        y_position -= 20  # Adjust for next line
-        if y_position < 50:
-            break  # Limit to prevent overflow
-
-    # Calculate dynamic page height based on content height
-    content_height = 700 - y_position  # Calculate total content height
-    page_height = content_height + 50  # Add extra margin for safety
-
-    # Finish and save the PDF
-    c.showPage()
-    c.save()
-
-    # Send PDF to printer
-    # Add your code here to send the generated PDF to the printer
-    # Example: os.system('lpr thermal_print.pdf')
-
-    return response
-
-
-# def print_pdf(request):
-#     response = HttpResponse(content_type='application/pdf')
-#     response['Content-Disposition'] = 'attachment; filename="thermal_print.pdf"'
-
-#     # Define custom page size based on thermal paper roll width
-#     page_width = 57  # Width in millimeters (adjust as needed)
-#     page_height = 200  # Height in millimeters (adjust as needed)    
-
-#     # Create PDF document
-#     c = canvas.Canvas(response, pagesize=(page_width, page_height))
-
-#     c.setFont("Helvetica", 10)
-#     c.drawString(0, 200, "Hello, Thermal Printer!")
-#     c.setFont("Helvetica", 6)
-#     c.drawCentredString(0,0,"Im a centered string")
-#     # Add more content as needed...
-
-#     # Finish and save the PDF
-#     c.showPage()
-#     c.save()
-
-#     # Send PDF to printer
-#     # Add your code here to send the generated PDF to the printer
-#     # Example: os.system('lpr thermal_print.pdf')
-
-#     return response
-
-
-def print_article(request, article_id):
-    article = get_object_or_404(Article, pk=article_id)
-
-    # Generate barcode
-    barcode_value = article.barrcode
-    if barcode_value:
-        barcode_instance = EAN13(barcode_value)
-        # Save barcode as SVG to a BytesIO object
-        buffer = BytesIO()
-        barcode_instance.write(buffer, options={'module_width': 0.2, 'module_height': 15, 'quiet_zone': 6})
-        buffer.seek(0)
-
-        # Parse SVG to reportlab graphics
-        drawing = svg2rlg(buffer)
-
-        # Convert reportlab graphics to PDF
-        pdf_buffer = BytesIO()
-        c = canvas.Canvas(pdf_buffer, pagesize=letter)
-
-        # Draw barcode
-        renderPDF.draw(drawing, c, 100, 700)
-
-        # Add additional information
-        c.drawString(100, 650, "Article Disignation: {}".format(article.disignation))
-        c.drawString(100, 630, "Article ID: {}".format(article.id))
-        # Add more information as needed
-
-        # Save the PDF
-        c.save()
-
-        # Return PDF as HttpResponse
-        response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="barcode-article-'+str(article_id)+'.pdf"'
-        return response
-    else:
-        return HttpResponse("Barcode value is not available for this article.")

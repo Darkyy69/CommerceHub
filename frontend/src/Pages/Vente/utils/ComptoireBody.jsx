@@ -2,19 +2,23 @@ import React, { useState, useEffect, useCallback } from "react";
 import { FaCheck, FaPen, FaPlus, FaMinus, FaTimes } from "react-icons/fa";
 import axios from "axios";
 import { useData } from "./DataProvider";
+import { MemoizedInfoArticle } from "./FenetreInfoArticle";
+import toast from "react-hot-toast";
+
+// import CustomSelect from "./CustomSelect";
 
 export default function ComptoireBody() {
   const [articleLookup, setArticleLookup] = useState({});
   const [article, setArticle] = useState([]);
   const [ajouter, setAjouter] = useState(false);
   const [showModal, setShowModal] = useState(true);
+  const [nvInputs, setNvInput] = useState({});
   const handleClose = () => {
     setShowModal(false);
     setAjouter(false);
+    setNvInput({});
   };
-  const [nvInputs, setNvInput] = useState({});
   const [selectedArticle, setSelectedArticle] = useState(null);
-  const [fontSize, setFontSize] = useState(80);
   const {
     input,
     setInput,
@@ -22,8 +26,6 @@ export default function ComptoireBody() {
     qteRef,
     resultRef,
     PrixRef,
-    InfoArticle,
-    setInfoArticle,
     data,
     setData,
     lastItemSelected,
@@ -47,24 +49,39 @@ export default function ComptoireBody() {
     };
 
     fetchData();
-    cbRef.current.select();
     console.log("in useEffect");
   }, []);
+  // const articleOptions = React.useMemo(() => {
+  //   return article.map((item, index) => item.disignation);
+  // }, [article]);
+  // const handleSelectChange = (selectedOption) => {
+  //   // Handle the selected option
+  //   console.log("Selected option:", selectedOption);
+  // };
 
   // Fonction pour afficher les options d'articles dans le champ de sélection
   const ArticlesOptions = React.useMemo(() => {
     console.log("in ArticlesOptions");
 
-    return article.map((item, index) => (
-      <option key={index} value={item.disignation}>
-        {item.disignation}
-      </option>
-    ));
+    return (
+      article
+        // .sort((a, b) => {
+        //   const aClean = a.disignation.replace(/[^a-zA-Z]/g, "zzzz");
+        //   const bClean = b.disignation.replace(/[^a-zA-Z]/g, "zzzz");
+        //   return aClean.localeCompare(bClean);
+        // })
+        .slice(0, 100)
+        .map((item, index) => (
+          <option key={index} value={item.disignation}>
+            {item.disignation}
+          </option>
+        ))
+    );
   }, [article]);
 
   const IdOptions = React.useMemo(() => {
     console.log("in IdOptions");
-    return article.map((item, index) => (
+    return article.slice(0, 100).map((item, index) => (
       <option key={index} value={item.id}>
         {item.id}
       </option>
@@ -101,7 +118,10 @@ export default function ComptoireBody() {
             qteRef.current.select();
           } else {
             setAjouter(true);
-            alert(
+            // alert(
+            //   "Article n'existe pas...Ouverture de la fenetre AjouterArticle"
+            // );
+            toast.error(
               "Article n'existe pas...Ouverture de la fenetre AjouterArticle"
             );
           }
@@ -138,6 +158,7 @@ export default function ComptoireBody() {
               ...prevData,
               {
                 article: selectedItem.disignation,
+                id_S_article: selectedItem.id,
                 quantity: +value,
                 price: +selectedItem.P_vente,
                 total: +selectedItem.P_vente * +value,
@@ -160,7 +181,8 @@ export default function ComptoireBody() {
               )
             );
           } else {
-            alert("Article n'existe pas");
+            // alert("Article n'existe pas");
+            toast.error("Article n'existe pas!");
           }
         }
         // Réinitialiser les champs d'entrée
@@ -181,6 +203,14 @@ export default function ComptoireBody() {
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
+      if (event.target.value.length > 7) {
+        const selectedItem = articleLookup[event.target.value];
+        if (!selectedItem) {
+          // déselectionner le champ code bare
+          event.currentTarget.blur();
+          return;
+        }
+      }
       qteRef.current.select();
     }
   };
@@ -229,6 +259,7 @@ export default function ComptoireBody() {
         prix: prixformater,
         cb: selectedItem.barrcode,
       }));
+      cbRef.current.value = selectedItem.barrcode;
       qteRef.current.select();
     }
   };
@@ -245,31 +276,56 @@ export default function ComptoireBody() {
     let value = e.target.value;
     setNvInput((val) => ({ ...val, [name]: value }));
   };
+  const HandelAjouterElement = async (e) => {
+    console.log(nvInputs);
 
-  const HandelAjouterElement = (e) => {
     e.preventDefault();
     const nouvelArticle = {
+      codif: nvInputs.article
+        ? nvInputs.article.substring(0, 3).toUpperCase()
+        : "",
       disignation: nvInputs.article,
-      barrcode: input.cb,
-      qte: input.qte,
+      barrcode: cbRef.current.value,
+      P_achat: 0,
       P_vente: parseFloat(nvInputs.prix),
-      id: 1, // Remplacer 1 par l'ID approprié de l'article
-      id_S_article: 1, // Remplacer 1 par l'ID approprié de la sous-catégorie de l'article
-      id_S_famille: 1, // Remplacer 1 par l'ID approprié de la famille de l'article
-      fournisseur_best: 2, // Remplacer 2 par l'ID approprié du fournisseur
+      P_min: 0,
+      fournisseur_best: 1, // Remplacer 2 par l'ID approprié du fournisseur
+      id_S_famille: 2, // Remplacer 1 par l'ID approprié de la famille de l'article
+      id_Article: 2,
     };
 
     // Mise à jour de l'état 'article' en ajoutant le nouvel article à la liste existante
     setArticle((prevArticles) => [...prevArticles, nouvelArticle]);
-    alert("article ajouter !!!!");
+    // Ajouter l'article a la base de données
+    const loadingToastID = toast.loading("Waiting...");
+
+    try {
+      await axios.post(
+        "http://127.0.0.1:8000/api/comptoire/entite-marchandise/s-article/",
+        nouvelArticle
+      );
+      // Dissmiss the loading toast
+      toast.dismiss(loadingToastID);
+      toast.success("Article ajouté avec succès!");
+    } catch (error) {
+      console.error(error);
+      // Dissmiss the loading toast
+      toast.dismiss(loadingToastID);
+      toast.error("Erreur lors de l'ajout de l'article!");
+    }
+    // Dissmiss the toast after 3 seconds
+    setTimeout(() => {
+      toast.dismiss();
+    }, 3000);
     // Réinitialiser les champs d'entrée
-    setInput({ art: "", qte: 1, id: 0, cb: 0, prix: 0 });
-    setNvInput({});
-    setAjouter(false);
+    setTimeout(() => {
+      setInput({ art: "", qte: 1, id: 0, cb: 0, prix: 0 });
+      setNvInput({});
+      setAjouter(false);
+    }, 500);
   };
 
   // La fenetre d'ajout d'article apparait dans le cas de l'ajout d'un article (code barre non trouvé)
-
   const fenetreAjouterArticle = React.useMemo(() => {
     console.log("in fenetreAjouterArticle");
     if (ajouter) {
@@ -277,7 +333,7 @@ export default function ComptoireBody() {
         <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-2/5 h-72 bg-gray-100 rounded-lg shadow-lg p-6">
           <div className="flex justify-between items-center mb-2">
             <h1 className="absolute top-2 left-2 text-xl font-bold">
-              Ajouter Article
+              Article Rapide
             </h1>
             <button
               className="absolute top-2 right-2 px-4 py-2 bg-red-500 text-white rounded-md"
@@ -288,15 +344,6 @@ export default function ComptoireBody() {
           </div>
 
           <div className="flex flex-col gap-2 mt-10">
-            <div className="flex flex-row justify-between items-center gap-1">
-              <label htmlFor="">Famille:</label>
-              <select
-                name="Famille"
-                id=""
-                className="border border-gray-300 h-8 w-56 "
-              ></select>
-            </div>
-
             <div className="flex flex-row justify-between items-center gap-1">
               <label htmlFor="">Article:</label>
               <input
@@ -322,7 +369,7 @@ export default function ComptoireBody() {
               <input
                 name="prix"
                 id=""
-                className="border border-gray-300 h-8 text-right"
+                className="border border-gray-300 h-8 text-center"
                 onChange={HandelNvInput}
               ></input>
             </div>
@@ -348,77 +395,6 @@ export default function ComptoireBody() {
     }
   }, [ajouter]);
 
-  // la fenetre de article info apparait dans le cas de clique sur F2
-  const FenetreInfoArticle = React.useMemo(() => {
-    console.log("in FenetreInfoArticle");
-    return (
-      InfoArticle && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-2/5 h-72 bg-gray-100 rounded-lg shadow-lg p-6">
-          <div className="flex justify-between items-center mb-2">
-            <h1 className="absolute top-2 left-2 text-xl font-bold">
-              Information Article
-            </h1>
-            <button
-              className="absolute top-2 right-2 px-4 py-2 bg-red-500 text-white rounded-md"
-              onClick={() => setInfoArticle(false)}
-            >
-              X
-            </button>
-          </div>
-
-          <div className="flex flex-col gap-2 mt-10">
-            <div className="flex flex-row justify-between items-center gap-1">
-              <label htmlFor="">Famille:</label>
-              <select
-                name="Famille"
-                id=""
-                className="border border-gray-300 h-8 w-56 "
-              ></select>
-            </div>
-
-            <div className="flex flex-row justify-between items-center gap-1">
-              <label htmlFor="">Article:</label>
-              <select
-                name="Article"
-                id=""
-                className="border border-gray-300 h-8 w-56 ml-1 "
-              ></select>
-              <div className="flex flex-row justify-between items-center gap-1">
-                <label htmlFor="">Id:</label>
-                <input
-                  name="Id"
-                  id=""
-                  className="border border-gray-400 h-8 w-14 text-center"
-                ></input>
-              </div>
-            </div>
-
-            <div className="flex flex-row justify-between items-center gap-1">
-              <label htmlFor="">CodeBarre:</label>
-              <input
-                name="CodeBarre"
-                id=""
-                className="border border-gray-300 h-8 text-center"
-                autoFocus="true"
-              ></input>
-            </div>
-            <div className="flex flex-row justify-between items-center gap-1">
-              <label htmlFor="">Prix:</label>
-              <input
-                name="Prix"
-                id=""
-                className="border border-gray-300 h-8 text-right"
-              ></input>
-            </div>
-          </div>
-          <div className="flex items-center justify-center mt-5">
-            <h1 className="text-2xl font-bold text-green-500">129.00DZD</h1>
-          </div>
-        </div>
-      )
-    );
-  }, [InfoArticle]);
-
   return (
     <div className="flex flex-row justify-between items-center w-full h-fit my-3">
       <div className="flex flex-col h-full items-start justify-center gap-5  bg-blue-500 p-3">
@@ -430,8 +406,11 @@ export default function ComptoireBody() {
               type="number"
               ref={cbRef}
               name="cb"
+              autoFocus={true}
+              onFocus={(e) => e.target.select()}
               onBlur={handleOnBlur}
               onKeyDown={handleKeyPress}
+              onClick={() => cbRef.current.select()}
               defaultValue={0}
             />
           </div>
@@ -442,7 +421,8 @@ export default function ComptoireBody() {
               className="h-12 w-20 text-center font-bold"
               ref={qteRef}
               name="qte"
-              // onChange={HandelInput}
+              onFocus={(e) => e.target.select()}
+              onClick={() => qteRef.current.select()}
               onKeyDown={handleKeyPressQte}
               onBlur={handleOnBlur}
               defaultValue={1}
@@ -486,6 +466,7 @@ export default function ComptoireBody() {
             {/* ajouter une option vide par défaut */}
             <option disabled value="" key={-1}></option>
             {ArticlesOptions}
+            {/* {CustomSelect({ options: articleOptions })} */}
           </select>
           <p style={{ marginTop: "6px" }} className="text-lg font-bold">
             Prix:
@@ -495,6 +476,8 @@ export default function ComptoireBody() {
             className="w-1/3 h-8 text-center"
             ref={PrixRef}
             name="prix"
+            onFocus={(e) => e.target.select()}
+            onClick={() => PrixRef.current.select()}
             onChange={HandelInput}
             value={input.prix}
           />
@@ -512,7 +495,7 @@ export default function ComptoireBody() {
         </div>
         <div
           ref={resultRef}
-          style={{ fontSize: `${fontSize}px` }}
+          style={{ fontSize: `80px` }}
           className="mt-10 text-green-500"
         >
           {/* Loop through data array (articles) and sum total */}
@@ -525,7 +508,7 @@ export default function ComptoireBody() {
         </div>
       </div>
 
-      {FenetreInfoArticle}
+      <MemoizedInfoArticle indexedArticles={articleLookup} />
       {fenetreAjouterArticle}
     </div>
   );
