@@ -39,11 +39,11 @@ function MonComposant() {
         </Link>
 
         <Link
-          to="/Vent/PaymentClient"
+          to="/Vente/PayementClients"
           className="flex justify-center border h-56 w-56 rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-blue-300 bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
         >
           <div className="flex flex-col justify-center items-center gap-9">
-            <h1 className="text-2xl font-bold">PaymentClient</h1>
+            <h1 className="text-2xl font-bold">PaymentClients</h1>
             <FaMoneyBillAlt size={94} />
           </div>
         </Link>

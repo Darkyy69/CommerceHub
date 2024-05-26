@@ -16,10 +16,34 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
+from django.shortcuts import render
+
+def index_view(request, path):
+    return render(request, 'dist/index.html')
+def index_view_nopath(request):
+    return render(request, 'dist/index.html')
+
+# def index_view_dev(request):
+#     return render(request, 'templates/base.html')
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('comptoire/', include('Comptoire.urls')),
     path('api/', include('core.api.urls')),
+    path('auth/',include('Auth.urls')),
+    # for production
+    # path('<path:path>', index_view),
+    # path('', index_view_nopath),
+
+    # For Development
+    # path('', index_view_dev),
+    path('', TemplateView.as_view(template_name="base.html")),
+    # Catch all routes
+    path('<path:path>', TemplateView.as_view(template_name="base.html")),
+
+
+
 
 ]

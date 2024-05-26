@@ -25,11 +25,23 @@ SECRET_KEY = 'django-insecure-h^k^esbf$#5d)4hsevqn!o1c^ny-5&b2i2)+4d72h_9@indjz3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'http://localhost:5173','http://127.0.0.1:5173','http://127.0.0.1:8000/']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'http://localhost:5173/','http://127.0.0.1:5173/','http://127.0.0.1:8000/']
 
 CORS_ALLOW_ALL_ORIGINS=True
 CORS_ALLOW_ORIGINS=['http://localhost:5173','http://127.0.0.1:5173']
-CORS_ALLOW_CREDENTIALS=True
+CORS_ALLOW_CREDENTIALS=True 
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173','http://127.0.0.1:5173']
+
+# Use token authentication
+# REST_FRAMEWORK = {
+
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         'rest_framework.permissions.IsAuthenticated',
+#     ),
+
+# }
+
+
 
 # Application definition
 
@@ -43,6 +55,7 @@ INSTALLED_APPS = [
     'Comptoire',
     'rest_framework',
     'corsheaders',
+    'Auth',
 ]
 
 MIDDLEWARE = [
@@ -61,7 +74,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR.parent / "frontend" / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,8 +136,26 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR.parent / "frontend" / "src" / "assets",
+    BASE_DIR.parent / "frontend" ,
+    BASE_DIR.parent / "frontend" / "public",
+    BASE_DIR.parent / "frontend" / "dist",
+]
+
+STATIC_ROOT = BASE_DIR / "static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Security settings
+CSRF_COOKIE_SAMESITE= 'Strict'
+SESSION_COOKIE_SAMESITE= 'Strict'
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_HTTPONLY = True
+
+# For production set them to True
+# CSRF_COOKIE_HTTPONLY = False
+# SESSION_COOKIE_HTTPONLY = True

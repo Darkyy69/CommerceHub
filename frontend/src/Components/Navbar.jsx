@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { DarkMode } from "./DarkMode";
 import Logo from "../assets/Logo.svg";
 import ProfilePicture from "../assets/profile-picture-5.jpg";
+import cookie from "js-cookie";
 
 export const Navbar = () => {
   const [selectedApp, setSelectedApp] = useState("");
@@ -13,18 +14,16 @@ export const Navbar = () => {
           <div className="flex items-center justify-start rtl:justify-end">
             <DrawerSidebar />
             {/* Logo */}
-            <a href="/Acceuil" className="flex ms-4 md:me-4">
+            {/* <a href="/Acceuil" className="flex ms-4 md:me-4">
               <img
-                // src="https://flowbite.com/docs/images/logo.svg"
                 src={Logo}
                 className="h-10 me-3"
                 alt="FlowBite Logo"
               />
-
-              {/* <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
+              <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
                 Commerce Hub
-              </span> */}
-            </a>
+              </span>
+            </a> */}
             {/* Search label for laptop+ */}
             <LaptopSearch />
           </div>
@@ -347,6 +346,33 @@ const Apps = () => {
   );
 };
 
+const handleLogout = () => {
+  try {
+    // Make a POST request to logout endpoint
+    fetch("/auth/logout/", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": cookie.get("csrftoken"),
+        "Content-Type": "application/json",
+      },
+      // Add any necessary headers here, like authorization tokens
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Redirect user to login page
+          window.location.href = "/Login/";
+        } else {
+          throw new Error("Failed to logout");
+        }
+      })
+      .catch((error) => {
+        console.error("Error logging out:", error);
+      });
+  } catch (error) {
+    console.error("Error logging out:", error);
+  }
+};
+
 const Account = () => {
   return (
     <div className="flex items-center ms-3">
@@ -413,6 +439,7 @@ const Account = () => {
               href="#"
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
               role="menuitem"
+              onClick={handleLogout}
             >
               Sign out
             </a>

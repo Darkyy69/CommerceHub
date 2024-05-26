@@ -342,8 +342,8 @@ const FenetreListeBon = ({ client, date, setListeBon }) => {
             <thead className="sticky top-0 bg-gray-50">
               <tr>
                 <th className="text-left p-4">Date</th>
-                <th className="p-4">Propriétaire</th>
-                <th className="p-4">Montant</th>
+                <th className="text-left p-4">Propriétaire</th>
+                <th className="text-left p-4">Montant</th>
               </tr>
             </thead>
 

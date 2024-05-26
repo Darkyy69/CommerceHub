@@ -43,7 +43,7 @@ const FenetreInfoArticle = ({ indexedArticles }) => {
               setInfoArt({ ...infoArt, famille: e.target.value })
             }
           >
-            <option value={" "}></option>
+            <option value={" "}>BS</option>
           </select>
         </div>
 
@@ -57,7 +57,7 @@ const FenetreInfoArticle = ({ indexedArticles }) => {
               value={infoArt.art}
               onChange={(e) => setInfoArt({ ...infoArt, art: e.target.value })}
             >
-              <option value="">Select an article</option>
+              <option value="">Eau minerale ifri 0.5l</option>
               {/* {Object.values(indexedArticles).map((article) => (
                 <option className="" key={article.id} value={article.barrcode}>
                   {article.disignation}
