@@ -75,7 +75,7 @@ export default function ComptoireBody() {
         //   const bClean = b.disignation.replace(/[^a-zA-Z]/g, "zzzz");
         //   return aClean.localeCompare(bClean);
         // })
-        .slice(0, 100)
+        // .slice(0, 100)
         .map((item, index) => (
           <option key={index} value={item.disignation}>
             {item.disignation}

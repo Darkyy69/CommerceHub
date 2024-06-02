@@ -39,7 +39,7 @@ urlpatterns = [
 
     # For Development
     # path('', index_view_dev),
-    path('', TemplateView.as_view(template_name="base.html")),
+    path('', TemplateView.as_view(template_name="templates/base.html")),
     # Catch all routes
     path('<path:path>', TemplateView.as_view(template_name="base.html")),
 

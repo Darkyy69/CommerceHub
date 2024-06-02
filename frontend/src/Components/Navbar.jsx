@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { DarkMode } from "./DarkMode";
 import Logo from "../assets/Logo.svg";
-import ProfilePicture from "../assets/profile-picture-5.jpg";
+// import ProfilePicture from "../assets/profile-picure-5.jpg";
 import cookie from "js-cookie";
 
 export const Navbar = () => {
@@ -386,7 +386,9 @@ const Account = () => {
           <span className="sr-only">Open user menu</span>
           <img
             className="w-8 h-8 rounded-full"
-            src={ProfilePicture}
+            src={
+              "https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+            }
             alt="user photo"
           ></img>
         </button>

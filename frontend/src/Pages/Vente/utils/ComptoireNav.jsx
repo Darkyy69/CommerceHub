@@ -17,6 +17,7 @@ import Parameters from "../../../assets/Parameters.json";
 
 export default function ComptoireNav() {
   const [client, setClient] = useState([]);
+  const [selectedClient, setSelectedClient] = useState("");
   const [listeBon, setListeBon] = useState(false);
   const [input, setInput] = useState({});
   // const [prix, setPrix] = useState();
@@ -43,8 +44,13 @@ export default function ComptoireNav() {
   };
 
   const onClientSelect = (e) => {
-    setClient(e.target.value);
+    setSelectedClient(client[e.target.value]);
+    console.log(e.target.value);
   };
+
+  useEffect(() => {
+    setSelectedClient(client[0]);
+  });
 
   useEffect(() => {
     axios
@@ -299,12 +305,12 @@ export default function ComptoireNav() {
             </h5>
             <select
               className="w-32 border-none h-6"
-              value={client[0]}
+              value={selectedClient}
               onChange={onClientSelect}
             >
               {/* Loop through client */}
               {client.map((item, index) => (
-                <option key={index} value={item.id}>
+                <option key={index} value={index}>
                   {item.nom}
                 </option>
               ))}

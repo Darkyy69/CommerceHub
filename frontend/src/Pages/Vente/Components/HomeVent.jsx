@@ -48,7 +48,7 @@ function MonComposant() {
           </div>
         </Link>
 
-        <Link
+        {/* <Link
           to="/Vente/Vendre"
           className="flex justify-center border h-56 w-56 rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-blue-300 bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
         >
@@ -56,7 +56,7 @@ function MonComposant() {
             <h1 className="text-2xl font-bold">Vendre</h1>
             <FaShoppingCart size={94} />
           </div>
-        </Link>
+        </Link> */}
       </div>
 
       <Outlet />

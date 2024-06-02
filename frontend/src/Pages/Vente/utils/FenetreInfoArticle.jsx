@@ -1,20 +1,49 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useData } from "./DataProvider";
 
 const FenetreInfoArticle = ({ indexedArticles }) => {
   const currency = "DA";
   const { InfoArticle, setInfoArticle } = useData();
-  const { article } = useData();
   const [infoArt, setInfoArt] = React.useState({
     famille: "",
     art: "",
     cb: "0",
     prix: "___.__",
   });
-
+  const [familles, setFamilles] = React.useState([]);
+  const [articles, setArticles] = React.useState([]);
+  console.log(familles);
   // la fenetre de article info apparait dans le cas de clique sur F2
   console.log("in FenetreInfoArticle");
-
+  // Fetch s-articles & familles from the API
+  const fetchArticles = async () => {
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/comptoire/entite-marchandise/s-articles/"
+      );
+      const data = await response.json();
+      // console.log(data);
+      setArticles(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchFamilles = async () => {
+    try {
+      const response = await fetch(
+        "/api/comptoire/entite-marchandise/s-famille/"
+      );
+      const data = await response.json();
+      // console.log(data);
+      setFamilles(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    fetchArticles();
+    fetchFamilles();
+  }, []);
   if (!InfoArticle) return null;
 
   return (
@@ -43,7 +72,7 @@ const FenetreInfoArticle = ({ indexedArticles }) => {
               setInfoArt({ ...infoArt, famille: e.target.value })
             }
           >
-            <option value={" "}>BS</option>
+            <option value={" "}>{infoArt.famille}</option>
           </select>
         </div>
 
@@ -57,7 +86,9 @@ const FenetreInfoArticle = ({ indexedArticles }) => {
               value={infoArt.art}
               onChange={(e) => setInfoArt({ ...infoArt, art: e.target.value })}
             >
-              <option value="">Eau minerale ifri 0.5l</option>
+              <option value="">
+                {infoArt.art ? infoArt.art : "Selectionner un article"}
+              </option>
               {/* {Object.values(indexedArticles).map((article) => (
                 <option className="" key={article.id} value={article.barrcode}>
                   {article.disignation}
@@ -91,7 +122,10 @@ const FenetreInfoArticle = ({ indexedArticles }) => {
                   ...prev,
                   art: searchedArticle.disignation,
                   prix: searchedArticle.P_vente,
-                  famille: searchedArticle.id_S_famille,
+                  // loop through familles to find the famille of the article and set famille to its disignation
+                  famille: familles.find(
+                    (famille) => famille.id === searchedArticle.id_S_famille
+                  ).disignation,
                 }));
               } else {
                 alert("Champ de CodeBarre Vide!");
